@@ -2,7 +2,7 @@
 # encoding: utf-8
 '''
 @author: codingma
-@file: lang_util.py
+@file: nlputils.py
 @time: 2019/9/9 21:52
 @desc: utils for natural language
 '''
@@ -13,7 +13,7 @@ import six
 import unicodedata
 from openccpy.opencc import *
 
-class LangUtil(object):
+class NlpUtils(object):
     SENTENCE_SPLITER = re.compile(r"[\?？？。。\!！！,，，]")
     SIMPLE_PUNCTUATION = re.compile(r"[\s+\.\!\/<>“”,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+")
     STOP_WORDS = re.compile(r'[呀啊哈呵]')
@@ -24,7 +24,7 @@ class LangUtil(object):
         """copy from google/dl"""
         output = []
         for uchar in ustring:
-            if LangUtil.is_chinese_char(uchar):
+            if NlpUtils.is_chinese_char(uchar):
                 output.append(" ")
                 output.append(uchar)
                 output.append(" ")
@@ -37,7 +37,7 @@ class LangUtil(object):
         """删除汉字"""
         outputs = []
         for uchar in ustring:
-            if LangUtil.is_chinese_char(uchar):
+            if NlpUtils.is_chinese_char(uchar):
                 outputs.append(uchar)
 
         return "".join(outputs)
@@ -70,7 +70,7 @@ class LangUtil(object):
     def is_chinese_string(ustring):
         """判断是否全为汉字"""
         for c in ustring:
-            if not LangUtil.is_chinese_char(c):
+            if not NlpUtils.is_chinese_char(c):
                 return False
         return True
 
@@ -78,13 +78,13 @@ class LangUtil(object):
     def has_chinese(ustring):
         """判断是否有汉字"""
         for c in ustring:
-            if LangUtil.is_chinese_char(c):
+            if NlpUtils.is_chinese_char(c):
                 return True
         return False
 
     @staticmethod
     def has_not_chinese(ustring):
-        return not LangUtil.has_chinese(ustring)
+        return not NlpUtils.has_chinese(ustring)
 
     @staticmethod
     def is_number(uchar):
@@ -106,21 +106,21 @@ class LangUtil(object):
     def is_alphabet_string(ustring):
         """判断是否全部为英文字母"""
         for ch in ustring:
-            if not LangUtil.is_alphabet(ch):
+            if not NlpUtils.is_alphabet(ch):
                 return False
         return True
 
     @staticmethod
     def is_number_str(ustring):
         for ch in ustring:
-            if not LangUtil.is_number(ch):
+            if not NlpUtils.is_number(ch):
                 return False
         return True
 
     @staticmethod
     def is_other_ch(uchar):
         """判断是否非汉字，数字和英文字符"""
-        if not (LangUtil.is_chinese_char(uchar) or LangUtil.is_number(uchar) or LangUtil.is_alphabet(uchar)):
+        if not (NlpUtils.is_chinese_char(uchar) or NlpUtils.is_number(uchar) or NlpUtils.is_alphabet(uchar)):
             return True
         else:
             return False
@@ -134,7 +134,7 @@ class LangUtil(object):
         """
         for ch in ustring:
             # 只要有一个是正常字符，就是正常字符
-            if not LangUtil.is_other_ch(ch):
+            if not NlpUtils.is_other_ch(ch):
                 return False
         return True
 
@@ -168,7 +168,7 @@ class LangUtil(object):
     @staticmethod
     def string_q2b(ustring):
         """字符串 全角转半角"""
-        return "".join([LangUtil.q2b(uchar) for uchar in ustring])
+        return "".join([NlpUtils.q2b(uchar) for uchar in ustring])
 
     @staticmethod
     def strip(usting):
@@ -178,13 +178,13 @@ class LangUtil(object):
     @staticmethod
     def delete_emoji(ustring):
         """将句子中的emoji全部进行删除"""
-        return LangUtil.EMOJI_PATTERN.sub("", ustring)
+        return NlpUtils.EMOJI_PATTERN.sub("", ustring)
 
     @staticmethod
     def delete_all_punct(ustring):
         outputs = []
         for uchar in ustring:
-            if not LangUtil.is_punctuation(uchar):
+            if not NlpUtils.is_punctuation(uchar):
                 outputs.append(uchar)
         return "".join(outputs)
 
@@ -195,7 +195,7 @@ class LangUtil(object):
         :param ustring:
         :return:
         """
-        return LangUtil.SIMPLE_PUNCTUATION.sub("", ustring)
+        return NlpUtils.SIMPLE_PUNCTUATION.sub("", ustring)
 
     @staticmethod
     def lower(ustring):
@@ -290,17 +290,17 @@ class LangUtil(object):
     def convert_to_unicode_obj(obj):
         if six.PY3 and (isinstance(obj, str) or isinstance(obj, bytes)) or \
                 six.PY2 and (isinstance(obj, str) or isinstance(obj, unicode)):
-            obj = LangUtil.convert_to_unicode(obj)
+            obj = NlpUtils.convert_to_unicode(obj)
         if isinstance(obj, list):
-            obj = [LangUtil.convert_to_unicode_obj(w) for w in obj]
+            obj = [NlpUtils.convert_to_unicode_obj(w) for w in obj]
         elif isinstance(obj, dict):
             for key in obj.keys():
-                obj[key] = LangUtil.convert_to_unicode_obj(obj[key])
+                obj[key] = NlpUtils.convert_to_unicode_obj(obj[key])
         return obj
 
     @staticmethod
     def split_sentence(ustring):
-        raw_sub_sentences = LangUtil.SENTENCE_SPLITER.split(ustring)
+        raw_sub_sentences = NlpUtils.SENTENCE_SPLITER.split(ustring)
         raw_sub_sentences = [raw_sub_sentence for raw_sub_sentence in raw_sub_sentences if len(raw_sub_sentence) > 0]
         merged_sentences = []
         length = len(raw_sub_sentences)
@@ -365,7 +365,7 @@ class LangUtil(object):
     @staticmethod
     def delete_stop_word(ustring):
         """删除停用词"""
-        return LangUtil.STOP_WORDS.sub("", ustring)
+        return NlpUtils.STOP_WORDS.sub("", ustring)
 
     @staticmethod
     def delete_punc_on_side(ustring):
@@ -379,7 +379,7 @@ class LangUtil(object):
 
         head_output = ""
         for index, uchar in enumerate(ustring):
-            if LangUtil.is_punctuation(uchar):
+            if NlpUtils.is_punctuation(uchar):
                 continue
             else:
                 head_output = ustring[index:]
@@ -387,7 +387,7 @@ class LangUtil(object):
 
         tail_output = ""
         for index in reversed(range(len(head_output))):
-            if LangUtil.is_punctuation(head_output[index]):
+            if NlpUtils.is_punctuation(head_output[index]):
                 continue
             else:
                 tail_output = head_output[0:index + 1]
@@ -421,13 +421,13 @@ class LangUtil(object):
     # 小写
     @staticmethod
     def clean(ustring):
-        return re.sub(u"[^\u4e00-\u9fa5_.a-zA-Z0-9]", "", LangUtil.lower(LangUtil.tra2sim(LangUtil.string_q2b(LangUtil.strip(ustring)))))
+        return re.sub(u"[^\u4e00-\u9fa5_.a-zA-Z0-9]", "", NlpUtils.lower(NlpUtils.tra2sim(NlpUtils.string_q2b(NlpUtils.strip(ustring)))))
 
 
 if __name__ == "__main__":
-    print(LangUtil.split_sentence("我要回老家。123."))
-    print(LangUtil.delete_stop_word("你好呀"))
-    print(LangUtil.delete_punc_on_side("u.."))
-    print(LangUtil.is_punctuation("u"))
-    print(LangUtil.clean("ABC123/*-中国 是abc"))
+    print(NlpUtils.split_sentence("我要回老家。123."))
+    print(NlpUtils.delete_stop_word("你好呀"))
+    print(NlpUtils.delete_punc_on_side("u.."))
+    print(NlpUtils.is_punctuation("u"))
+    print(NlpUtils.clean("ABC123/*-中国 是abc"))
     print(sys.maxsize)
